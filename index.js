@@ -5,14 +5,18 @@ var cities = [];
 var key = "fc8bfacdac6r209ecs22977";
 
 
-var date = new Date();
+function FormatDay(date){
+    var date = new Date();
+    console.log(date);
+    var month = date.getMonth()+1;
+    var day = date.getDate();
 
-var month = date.getMonth()+1;
-var day = date.getDate();
+    var dayOutput = date.getFullYear() + '/' +
+        (month<10 ? '0' : '') + month + '/' +
+        (day<10 ? '0' : '') + day;
+    return dayOutput;
+}
 
-var dayOutput = date.getFullYear() + '/' +
-    (month<10 ? '0' : '') + month + '/' +
-    (day<10 ? '0' : '') + day;
 
 
 
@@ -56,10 +60,15 @@ function renderCities() {
       li.attr("class", "list-group-item");
       console.log(li);
 
-      cityList.append(li);
-    }
-    getResponseWeather(city);
-  }
+      cityList.prepend(li);
+      if (!city){
+        return
+    } 
+    else{
+        getResponseWeather(city)
+    };
+}   
+
 
 
   $("#add-city").on("click", function(event){
@@ -90,7 +99,7 @@ function renderCities() {
       method: "GET"
     }).then(function(response) {
 
-      var cityTitle = $("<h3>").text(response.name + " "+ dayOutput);
+      var cityTitle = $("<h3>").text(response.name + " "+ FormatDay());
       $("#today-weather").append(cityTitle);
       var TempetureToNum = parseInt((response.main.temp)* 9/5 - 459);
       var cityTemperature = $("<p>").text("Tempeture: "+ TempetureToNum + " °F");
@@ -125,6 +134,43 @@ function renderCities() {
         }
       });
     });
+    var cnt = 5;   
+    var queryURL3 = "https://api.openweathermap.org/data/2.5/forecast?q=" + cityName + "&appid=" + key;
+      $.ajax({
+      url: queryURL3,
+      method: "GET"
+    }).then(function(response5day) { 
+      $("#boxes").empty();
+      console.log(response5day);
+      for(var i=0; i<15; i=i+2){
+          var FivedayDiv = $("<div>");
+          FivedayDiv.attr("class","col-3 m-2 bg-primary")
+          var read_date = response5day.list[i].dt;
+          var d = new Date(0); 
+          d.setUTCSeconds(read_date);
+          var date = d;
+          console.log(date);
+          var month = date.getMonth()+1;
+          var day = date.getDate();
+          var dayOutput = date.getFullYear() + '/' +
+          (month<10 ? '0' : '') + month + '/' +
+          (day<10 ? '0' : '') + day;
+          var Fivedayh4 = $("<h6>").text(dayOutput);
+          var imgtag = $("<img>");
+          var pTemperatureK = response5day.list[i].main.temp;
+          var TempetureTof = parseInt((pTemperatureK)* 9/5 - 459);
+          var pTemperature = $("<p>").text("Tempeture: "+ TempetureToNum + " °F");
+          var pHumidity = $("<p>").text("Humidity: "+ response5day.list[i].main.humidity + " %");
+          FivedayDiv.append(Fivedayh4);
+          FivedayDiv.append(imgtag);
+          FivedayDiv.append(pTemperature);
+          FivedayDiv.append(pHumidity);
 
-  }
+          $("#boxes").prepend(FivedayDiv);
+
+
+
+      }
+
+  });
 
