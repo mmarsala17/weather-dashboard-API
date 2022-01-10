@@ -2,6 +2,7 @@ var cityList =$("#city-list");
 
 
 var cities = [];
+console.log(cities);
 
 
 init();
@@ -26,18 +27,19 @@ function init(){
 function storeCities(){
   
   localStorage.setItem("cities", JSON.stringify(cities));
+  console.log(localStorage);
 }
 
 
 function renderCities() {
 
-    cityList.text = "";
+    cityList.empty = ();
 
 
     for (var i = 0; i < cities.length; i++) {
       var city = cities[i];
-      console.log(city);
 
+      
       var li = $("<li>").text(city);
       li.attr("data-index", i);
       li.attr("class", "list-group-item");
@@ -51,8 +53,17 @@ function renderCities() {
   $("#add-city").on("click", function(event){
       event.preventDefault();
 
+      var city = $("#city-input").val().trim();
+      
+      if (city === "") {
+        return;
+    }
 
     cities.push(city);
-    renderCities();
 
+    console.log(cities);
+    console.log(city);
+
+  storeCities();
+  renderCities();
   });
